@@ -5,8 +5,16 @@
 
 
 	install -d -m 0755 /home/user/.config/mpv
-	cat > /home/user/.config/mpv/mpv.conf <<'MPVEOF'
-hwdec=v4l2request
+	# Ubuntu noble ships mpv 0.37, which predates the v4l2request decoder; asking
+	# for it there makes playback fail instead of falling back, so use the
+	# generic safe auto-detection on that distro.
+	if [ "${DISTRO:-}" = "ubuntu" ]; then
+		mpv_hwdec="hwdec=auto-safe"
+	else
+		mpv_hwdec="hwdec=v4l2request"
+	fi
+	cat > /home/user/.config/mpv/mpv.conf <<MPVEOF
+${mpv_hwdec}
 vo=gpu
 gpu-context=x11egl
 gpu-dumb-mode=yes

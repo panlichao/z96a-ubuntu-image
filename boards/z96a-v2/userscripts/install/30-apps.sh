@@ -17,7 +17,17 @@
 		install_required_deb "$pkg"
 	done
 	if [ "$ENABLE_MULTIMEDIA" = "1" ]; then
-		install_required_deb /opt/z96a/packages/mpv_0.41.0-2_arm64_bookworm.deb
+		if [ "${DISTRO:-}" = "ubuntu" ]; then
+			# The bundled mpv 0.41 is linked against ffmpeg 8 (libavcodec.so.63),
+			# libplacebo.so.387 and libdisplay-info.so.2.  None of those sonames
+			# exist on noble (ffmpeg 6 / libplacebo 349 / libdisplay-info 1), so
+			# the package cannot resolve and its V4L2-request decoder cannot be
+			# loaded either.  Use the distro mpv; hardware decode falls back to
+			# software (see docs: V4L2 stateless needs mpv >= 0.39 on noble).
+			DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends mpv
+		else
+			install_required_deb /opt/z96a/packages/mpv_0.41.0-2_arm64_bookworm.deb
+		fi
 	fi
 	# The two board-specific debs were built on Devuan and declare Devuan-only
 	# package names.  On Ubuntu noble the shared objects are present under
