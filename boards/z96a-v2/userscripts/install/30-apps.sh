@@ -44,6 +44,8 @@
 			libjpeg62 libpng16-16t64 libpam0g libxft2 libxmu6 libxrandr2
 		compat_src=$(mktemp -d)
 		mkdir -p "$compat_src/DEBIAN"
+		# Provides versions must sit above any Breaks the renamed noble packages
+		# declare (libpng16-16t64 breaks libpng16-16 << 1.6.43-5ubuntu0.7).
 		cat > "$compat_src/DEBIAN/control" <<'COMPATEOF'
 Package: z96a-distro-compat
 Version: 1.0
@@ -51,7 +53,7 @@ Architecture: all
 Maintainer: z96a <z96a@localhost>
 Section: metapackages
 Priority: optional
-Provides: elogind (= 255), libjpeg62-turbo (= 2.1.5), libpng16-16 (= 1.6.43), default-logind, logind
+Provides: elogind (= 255), libjpeg62-turbo (= 2.1.5), libpng16-16 (= 1.6.43-99), default-logind, logind
 Description: Virtual package names the z96a Devuan-built debs expect
  The board-specific slim and power-policy packages were compiled on Devuan and
  declare elogind, libjpeg62-turbo and libpng16-16.  On Ubuntu those shared
