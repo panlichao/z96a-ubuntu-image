@@ -3,16 +3,29 @@
 # Phase 2 module split: content and execution order unchanged.
 
 	rm -rf /home/user/.cache/openbox/sessions
-	globalkeys=/home/user/.config/lxqt/globalkeyshortcuts.conf
-	globalkeys_defaults=/etc/xdg/lxqt/globalkeyshortcuts.conf/globalkeyshortcuts.conf
+	# LXQt >= 2.0 shipped the system default as a directory that contains
+	# globalkeyshortcuts.conf, LXQt 1.4 (Ubuntu noble) ships a single file at
+	# /etc/xdg/lxqt/globalkeyshortcuts.conf.  Rewrite whichever exists; on a
+	# distro that ships neither there is nothing to patch, so stay quiet.
+	globalkeys_defaults=""
+	for candidate in /etc/xdg/lxqt/globalkeyshortcuts.conf/globalkeyshortcuts.conf \
+	                 /etc/xdg/lxqt/globalkeyshortcuts.conf; do
+		[ -f "$candidate" ] && { globalkeys_defaults="$candidate"; break; }
+	done
 	for shortcut in 'XF86MonBrightnessDown.4:5%-' 'XF86MonBrightnessUp.5:5%+' 'Shift%2BControl%2BF6.2:5%-' 'Shift%2BControl%2BF7.3:5%+'; do
 		section=${shortcut%%:*}
 		brightness_step=${shortcut#*:}
-		sed -i "/^\\[$section\\]/,/^\\[/ s|^Exec=.*|Exec=brightnessctl, --device=backlight, set, $brightness_step|" "$globalkeys_defaults"
+		if [ -n "$globalkeys_defaults" ]; then
+			sed -i "/^\\[$section\\]/,/^\\[/ s|^Exec=.*|Exec=brightnessctl, --device=backlight, set, $brightness_step|" "$globalkeys_defaults"
+		fi
 	done
 	update-rc.d slim defaults >/dev/null 2>&1 || true
 
-	mv -f /root/z96a-bt-after-wifi /usr/local/sbin/z96a-bt-after-wifi
+	# Keep an existing copy (from the rootfs overlay) when no staged one exists;
+	# the upstream Devuan build staged this helper under /root.
+	if [ -f /root/z96a-bt-after-wifi ]; then
+		mv -f /root/z96a-bt-after-wifi /usr/local/sbin/z96a-bt-after-wifi
+	fi
 
 	install -d -m 0700 /root/.ssh /home/user/.ssh
 	if [ -n "${Z96A_SSH_KEY:-}" ]; then
