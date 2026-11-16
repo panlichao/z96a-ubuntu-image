@@ -51,7 +51,7 @@ Architecture: all
 Maintainer: z96a <z96a@localhost>
 Section: metapackages
 Priority: optional
-Provides: elogind (= 255), libjpeg62-turbo (= 2.1.5), libpng16-16 (= 1.6.43), default-logind, logind, consolekit
+Provides: elogind (= 255), libjpeg62-turbo (= 2.1.5), libpng16-16 (= 1.6.43), default-logind, logind
 Description: Virtual package names the z96a Devuan-built debs expect
  The board-specific slim and power-policy packages were compiled on Devuan and
  declare elogind, libjpeg62-turbo and libpng16-16.  On Ubuntu those shared
