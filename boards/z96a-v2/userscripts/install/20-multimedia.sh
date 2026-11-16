@@ -21,6 +21,10 @@ gpu-dumb-mode=yes
 dither=no
 MPVEOF
 	chown -R user:user /home/user/.config/mpv
+	# xdg-mime runs as the target user and writes ~/.config/mimeapps.list; earlier
+	# package postinsts can leave parts of the home directory root-owned, which
+	# silently dropped every default-application association.
+	if [ -d /home/user/.config ]; then chown -R user:user /home/user/.config; fi
 	# Use upstream mpv for zero-copy v4l2request; Celluloid's distro libmpv
 	# does not expose the V4L2 Request hardware decoder, so keep it only as a fallback.
 	for mime in \
