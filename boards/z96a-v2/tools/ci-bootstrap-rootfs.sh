@@ -49,6 +49,7 @@ if [ -r /etc/ssl/certs/ca-certificates.crt ]; then
 fi
 
 echo "rootfs bootstrap: building $TARBALL via 'make rootfs' in $IMAGE"
+mkdir -p output/ci
 set -o pipefail
 docker run --rm --privileged \
     -v "$ROOT:/build" \
@@ -56,9 +57,29 @@ docker run --rm --privileged \
     "${CA_MOUNT[@]}" \
     -w /build \
     -e BOARD="$BOARD" \
+    -e HOST_UID="$(id -u)" \
+    -e HOST_GID="$(id -g)" \
     -e TERM="${TERM:-xterm}" \
     "$IMAGE" \
-    bash -lc "make rootfs board=$BOARD" 2>&1 | tee output/ci/rootfs-bootstrap.log
+    bash -lc '
+        set -e
+        # `debootstrap_script()` in lib/function/rootfs symlinks the suite alias
+        # (e.g. gutsy -> noble) for every non-Debian distribution.  The build
+        # image ships mmdebstrap but not debootstrap, so both the directory and
+        # the alias source are missing and `ln -sr` aborts the whole run.
+        # mmdebstrap never reads those scripts, so a stub is enough; a real
+        # debootstrap install is preferred when the network allows it.
+        if [ ! -f /usr/share/debootstrap/scripts/gutsy ]; then
+            apt-get update -qq || true
+            apt-get install -y --no-install-recommends debootstrap >/dev/null 2>&1 || true
+        fi
+        mkdir -p /usr/share/debootstrap/scripts
+        [ -e /usr/share/debootstrap/scripts/gutsy ] || : > /usr/share/debootstrap/scripts/gutsy
+        make rootfs board='"$BOARD"'
+        # `make rootfs` runs as root here; hand the products back to the runner
+        # user so the following workflow steps can still write to output/.
+        chown -R "${HOST_UID}:${HOST_GID}" /build/output /build/board.txt 2>/dev/null || true
+    ' 2>&1 | tee output/ci/rootfs-bootstrap.log
 
 [ -s "output/tarball/$TARBALL" ] || {
     echo "rootfs bootstrap failed: output/tarball/$TARBALL not produced" >&2
