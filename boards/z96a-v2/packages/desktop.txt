@@ -25,7 +25,6 @@ obconf-qt-l10n
 openbox
 papirus-icon-theme
 pcmanfm-qt-l10n
-qt6-svg-plugins
 qt6-translations-l10n
 qterminal
 qterminal-l10n

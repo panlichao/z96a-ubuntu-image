@@ -35,7 +35,6 @@ mesa-vulkan-drivers
 network-manager
 network-manager-gnome
 nfs-common
-nm-connection-editor
 p7zip-full
 python3
 python3-gi
