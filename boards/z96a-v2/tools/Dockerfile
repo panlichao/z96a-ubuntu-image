@@ -49,6 +49,7 @@ RUN if [ -n "$APT_MIRROR" ]; then \
         dpkg-dev \
         fakeroot \
         debhelper \
+        debootstrap \
         libelf-dev \
         libncurses-dev \
         libssl-dev \
@@ -57,6 +58,7 @@ RUN if [ -n "$APT_MIRROR" ]; then \
         parted \
         patch \
         pkg-config \
+        pv \
         python3 \
         python3-setuptools \
         qemu-user-static \
