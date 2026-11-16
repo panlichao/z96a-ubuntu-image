@@ -7,12 +7,6 @@ cifs-utils
 davfs2
 dbus-x11
 desktop-file-utils
-firmware-iwlwifi
-firmware-linux
-firmware-linux-nonfree
-firmware-misc-nonfree
-firmware-qcom-soc
-firmware-realtek
 fonts-liberation
 fonts-noto-cjk
 fonts-noto-color-emoji

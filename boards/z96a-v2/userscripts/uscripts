@@ -99,7 +99,7 @@ MANUAL="false"
 IPADDR=""
 GATEWAY=""
 DNS=""
-HOSTNAME="z96a-devuan"
+HOSTNAME="z96a-ubuntu"
 EOF
 		chmod 0600 /boot/credentials.txt
 	fi

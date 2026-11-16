@@ -8,7 +8,8 @@ cd "$ROOT"
 
 LOCK_OUT=${1:?usage: ci-resolve-inputs.sh LOCK_OUT COMPONENTS_JSON}
 JSON_OUT=${2:?usage: ci-resolve-inputs.sh LOCK_OUT COMPONENTS_JSON}
-REPOSITORY=${GITHUB_REPOSITORY:-alkaid-ops/z96a-devuan-image}
+# Component releases are published in the upstream repo; see ci-fetch-inputs.
+REPOSITORY=${Z96A_COMPONENT_REPO:-${GITHUB_REPOSITORY:-alkaid-ops/z96a-devuan-image}}
 tags=("${KERNEL_RELEASE:-}" "${BASE_APPS_RELEASE:-}" "${UBOOT_RELEASE:-}")
 present=0
 for tag in "${tags[@]}"; do [ -z "$tag" ] || present=$((present + 1)); done

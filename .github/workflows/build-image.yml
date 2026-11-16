@@ -175,6 +175,7 @@ jobs:
           KERNEL_RELEASE: ${{ inputs.kernel_release }}
           BASE_APPS_RELEASE: ${{ inputs.base_apps_release }}
           UBOOT_RELEASE: ${{ inputs.uboot_release }}
+          Z96A_COMPONENT_REPO: alkaid-ops/z96a-devuan-image
           GH_TOKEN: ${{ github.token }}
         run: |
           set -eu
@@ -193,7 +194,19 @@ jobs:
         env:
           Z96A_INPUT_CACHE: ${{ env.Z96A_CACHE_ROOT }}/input
           Z96A_INPUTS_LOCK: ${{ steps.resolve-inputs.outputs.lock_path }}
+          Z96A_COMPONENT_REPO: alkaid-ops/z96a-devuan-image
+        # Component releases live in the upstream repo (kernel/U-Boot/app debs
+        # are distribution-agnostic); this fork only changes the userspace.
         run: boards/z96a-v2/tools/ci-fetch-inputs.sh
+
+      - name: Bootstrap distribution rootfs (Ubuntu/noble)
+        # The prebuilt base-apps component only ships a Devuan tarball. For a
+        # non-Devuan DISTRO, build the matching rootfs from source first so the
+        # prepare step below can find it. No-op when DISTRO is devuan or the
+        # tarball is already cached.
+        env:
+          BOARD: z96a-v2
+        run: boards/z96a-v2/tools/ci-bootstrap-rootfs.sh
 
       - name: Restore prebuilt build inputs
         env:

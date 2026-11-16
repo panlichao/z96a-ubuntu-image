@@ -96,12 +96,15 @@ LXQTMENUEOF
 	install -m 0644 /opt/z96a/session/config/qterminal/qterminal.ini /home/user/.config/qterminal.org/qterminal.ini
 	install -m 0644 /opt/z96a/session/config/user-dirs.dirs /home/user/.config/user-dirs.dirs
 	chown -R user:user /home/user/Desktop /home/user/.config/pcmanfm-qt /home/user/.config/qterminal.org /home/user/.config/user-dirs.dirs
-	install -d -m 0755 /etc/elogind/logind.conf.d
-	cat > /etc/elogind/logind.conf.d/99-z96a-power-key.conf <<'ELOGINDEOF'
+	# Ubuntu uses systemd-logind (/etc/systemd/logind.conf.d); Devuan used
+	# elogind (/etc/elogind/logind.conf.d).  Write both so the policy applies
+	# regardless of which logind implementation the base image ships.
+	install -d -m 0755 /etc/systemd/logind.conf.d /etc/elogind/logind.conf.d
+	cat > /etc/systemd/logind.conf.d/99-z96a-power-key.conf <<'ELOGINDEOF'
 [Login]
 # LXQt's powermanager handles the desktop power/suspend keys through
 # lxqt-globalkeys. Its logind Inhibit() call is denied by polkit on this image,
-# so elogind must keep ignoring these keys to avoid double actions.
+# so logind must keep ignoring these keys to avoid double actions.
 # The fallback outside an LXQt session is deliberately "no action".
 HandlePowerKey=ignore
 HandleSuspendKey=ignore
@@ -111,3 +114,5 @@ HandleLidSwitchExternalPower=ignore
 HandleLidSwitchDocked=ignore
 IdleAction=ignore
 ELOGINDEOF
+	cp -f /etc/systemd/logind.conf.d/99-z96a-power-key.conf \
+		/etc/elogind/logind.conf.d/99-z96a-power-key.conf

@@ -23,7 +23,10 @@ cd "$ROOT"
 
 CACHE=${Z96A_INPUT_CACHE:?set Z96A_INPUT_CACHE}
 LOCK=${Z96A_INPUTS_LOCK:-config/inputs.lock}
-REPOSITORY=${GITHUB_REPOSITORY:-alkaid-ops/z96a-devuan-image}
+# Component releases are published in the upstream repo. A downstream fork
+# (e.g. the Ubuntu variant) has no releases of its own, so allow an explicit
+# override that takes precedence over GITHUB_REPOSITORY.
+REPOSITORY=${Z96A_COMPONENT_REPO:-${GITHUB_REPOSITORY:-alkaid-ops/z96a-devuan-image}}
 BASE="https://github.com/${REPOSITORY}/releases/download"
 
 [ -f "$LOCK" ] || { echo "missing lock file: $LOCK" >&2; exit 1; }

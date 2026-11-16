@@ -11,12 +11,8 @@ cifs-utils
 davfs2
 dbus-x11
 desktop-file-utils
-firmware-iwlwifi
-firmware-linux
-firmware-linux-nonfree
-firmware-misc-nonfree
-firmware-qcom-soc
-firmware-realtek
+# Ubuntu noble: firmware comes from linux-firmware (pulled by stage2 UBUNTU_FW
+# and the kernel package); Debian-only firmware-* metapackages do not exist.
 fonts-liberation
 fonts-noto-cjk
 fonts-noto-color-emoji
